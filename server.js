@@ -1,10 +1,17 @@
 var express=require('express');
 
+var bodyParser=require('body-parser');
+
 var app=express();
 
 var port= process.env.PORT || 3000;
 
-var todos=[{
+
+var todos=[{}];
+
+var todoNext=1;
+
+/*var todos=[{
 	id:1,
 	description: 'Complete Cracking the Coding Interview',
 	completed: false
@@ -20,9 +27,16 @@ var todos=[{
 },
 {
 	id:4,
-	description: 'Watch Arsenal Game',
+	description: 'Watch Real Madrid Game',
 	completed: false
-}];
+},
+{
+	id:5,
+	description: 'Buy Groceries',
+	completed: true
+}];*/
+
+app.use(bodyParser.json());
 
 app.get('/',function(req,res) {
 	res.send('Todo API Root');
@@ -47,6 +61,19 @@ app.get('/todos/:id',function(req,res){
 
 	if(flag)
 		res.status(404).send();
+});
+
+app.post('/todos',function(req,res){
+	var body=req.body;
+
+	body.id=todoNext++;
+
+	todos.push(body);
+
+	
+
+	res.json(body);
+
 });
 
 app.listen(port,function() {
