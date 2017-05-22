@@ -6,35 +6,12 @@ var app=express();
 
 var port= process.env.PORT || 3000;
 
+var _=require('underscore');
 
 var todos=[{}];
 
 var todoNext=1;
 
-/*var todos=[{
-	id:1,
-	description: 'Complete Cracking the Coding Interview',
-	completed: false
-},{
-	id:2,
-	description: 'Complete Mobile Application',
-	completed: true
-},
-{
-	id:3,
-	description: 'Complete Node js Application',
-	completed: true
-},
-{
-	id:4,
-	description: 'Watch Real Madrid Game',
-	completed: false
-},
-{
-	id:5,
-	description: 'Buy Groceries',
-	completed: true
-}];*/
 
 app.use(bodyParser.json());
 
@@ -47,24 +24,28 @@ app.get('/todos',function(req,res){
 });
 
 app.get('/todos/:id',function(req,res){
-	var todoID=req.params.id;
-	var flag=true;
+	var todoID=parseInt(req.params.id,10);
 
-	for(var i=0; i< todos.length;i++)
-	{
-		if(todos[i].id == todoID)
-		{
-			res.json(todos[i]);
-			flag=false;
-		}	
-	}	
+	var matchedTodo=_.findWhere(todos,{id:todoID});
 
-	if(flag)
+	if(matchedTodo) {
+		res.json(matchedTodo);
+	}
+	else {
 		res.status(404).send();
+	}
+	
+
 });
 
 app.post('/todos',function(req,res){
-	var body=req.body;
+	var body=_.pick(req.body,'description','completed');
+
+	if(!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+		return res.status(400).send();
+	}
+
+	body.description=body.description.trim();
 
 	body.id=todoNext++;
 
