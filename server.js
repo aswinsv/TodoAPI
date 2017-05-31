@@ -20,7 +20,21 @@ app.get('/',function(req,res) {
 });
 
 app.get('/todos',function(req,res){
-		res.json(todos);
+
+		var queryParameters=req.query;
+
+		var filteredTodos=todos;
+
+		if(queryParameters.hasOwnProperty('completed') && queryParameters.completed=='true')
+			{
+				filteredTodos=_.where(todos,{completed:true});
+			}	
+
+		else if(queryParameters.hasOwnProperty('completed') && queryParameters.completed=='false')
+			filteredTodos=_.where(todos,{completed:false});
+
+
+		res.json(filteredTodos);
 });
 
 // display the input id from todos array
