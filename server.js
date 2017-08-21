@@ -68,16 +68,33 @@ app.post('/todos',function(req,res){
 
 // display the input id from todos array
 app.get('/todos/:id',function(req,res){
+
+
+
 	var todoID=parseInt(req.params.id,10);
 
-	var matchedTodo=_.findWhere(todos,{id:todoID});
+	db.todo.findById(todoID).then(function(todo){
+				if(todo) {
+
+				res.json(todo.toJSON());
+							
+				} else {
+
+					res.status(404).send();
+				}
+
+			},function(e){
+		res.status(500).json(e);
+	});
+
+	/*var matchedTodo=_.findWhere(todos,{id:todoID});
 
 	if(matchedTodo) {
 		res.json(matchedTodo);
 	}
 	else {
 		res.status(404).send();
-	}
+	}*/
 	
 
 });
