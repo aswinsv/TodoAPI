@@ -12,6 +12,9 @@ var todos=[{}];
 
 var todoNext=1;
 
+var db=require('./db.js');	
+
+var sequelize=db.sequelize;
 
 app.use(bodyParser.json());
 
@@ -19,9 +22,24 @@ app.get('/',function(req,res) {
 	res.send('Todo API Root');
 });
 
-app.get('/todos',function(req,res){
+app.post('/todos',function(req,res){
 
-		var queryParameters=req.query;
+	var body=_.pick(req.body,'description','completed');
+
+
+	db.todo.create(body).then(function(todo){
+
+			console.log("Todo added to DB");
+		
+				res.json(todo.toJSON());
+			
+
+	}).catch(function(e){
+
+		res.status(400).json(e);
+	}); 
+
+		/*var queryParameters=req.query;
 
 		var filteredTodos=todos;
 
@@ -45,7 +63,7 @@ app.get('/todos',function(req,res){
 
 
 
-		res.json(filteredTodos);
+		res.json(filteredTodos);*/
 });
 
 // display the input id from todos array
@@ -126,7 +144,7 @@ app.put('/todos/:id',function(req,res){
 
 
 // POST-Sends value to server
-app.post('/todos',function(req,res){
+/*app.post('/todos',function(req,res){
 	var body=_.pick(req.body,'description','completed');
 
 	if(!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
@@ -143,10 +161,16 @@ app.post('/todos',function(req,res){
 
 	res.json(body);
 
-});
+});*/
 
 
+sequelize.sync().then(function(){
 
-app.listen(port,function() {
+	app.listen(port,function() {
 	console.log('Express listening on port'+port+'!');
 });
+
+});
+
+
+
